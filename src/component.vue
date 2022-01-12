@@ -14,6 +14,7 @@
 
   export default {
     name: 'date-picker',
+
     props: {
       value: {
         default: null,
@@ -22,6 +23,12 @@
           return value === null || value instanceof Date || typeof value === 'string' || value instanceof String || value instanceof moment
         }
       },
+
+      emitExternalChange: {
+        default: false,
+        type: Boolean
+      },
+
       // http://eonasdan.github.io/bootstrap-datetimepicker/Options/
       config: {
         type: Object,
@@ -40,7 +47,8 @@
       return {
         dp: null,
         // jQuery DOM
-        elem: null
+        elem: null,
+        externalChange: false
       };
     },
     mounted() {
@@ -67,6 +75,7 @@
        * @param newValue
        */
       value(newValue) {
+        this.externalChange = true;
         this.dp && this.dp.date(newValue || null)
       },
 
@@ -89,8 +98,13 @@
        * @param event
        */
       onChange(event) {
+        if(!this.emitExternalChange && this.externalChange) {
+          this.externalChange = false;
+          return;
+        }
+
         let formattedDate = event.date ? event.date.format(this.dp.format()) : null;
-        this.$emit('input', formattedDate);
+        this.$emit('input', formattedDate, event);
       },
 
       /**
