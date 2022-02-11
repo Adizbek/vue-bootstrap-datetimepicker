@@ -90,6 +90,11 @@
        */
       onChange(event) {
         let formattedDate = event.date ? event.date.format(this.dp.format()) : null;
+
+        if(formattedDate === this.value) {
+          return;
+        }
+
         this.$emit('input', formattedDate);
       },
 
